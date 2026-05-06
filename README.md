@@ -1,0 +1,2 @@
+# Practicetrading
+Trading lang
