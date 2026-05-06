@@ -1,2 +1,1 @@
-# Practicetrading
-Trading lang
+
