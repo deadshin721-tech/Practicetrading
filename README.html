@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Trading Simulator</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    background:#0f172a;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container{
+    width:900px;
+    background:#111827;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 0 20px rgba(0,0,0,0.5);
+}
+
+.top{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:20px;
+}
+
+.card{
+    background:#1e293b;
+    padding:15px;
+    border-radius:15px;
+    width:32%;
+    text-align:center;
+}
+
+.card h2{
+    font-size:18px;
+    color:#94a3b8;
+}
+
+.card p{
+    margin-top:10px;
+    font-size:28px;
+    font-weight:bold;
+}
+
+.chart{
+    background:#0b1220;
+    height:300px;
+    border-radius:15px;
+    position:relative;
+    overflow:hidden;
+    margin-bottom:20px;
+}
+
+.line{
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:flex-end;
+}
+
+.bar{
+    flex:1;
+    margin:1px;
+    background:limegreen;
+    transition:0.3s;
+}
+
+.controls{
+    display:flex;
+    gap:15px;
+}
+
+button{
+    flex:1;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.buy{
+    background:#16a34a;
+    color:white;
+}
+
+.sell{
+    background:#dc2626;
+    color:white;
+}
+
+.reset{
+    background:#334155;
+    color:white;
+}
+
+button:hover{
+    transform:scale(1.03);
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="top">
+        <div class="card">
+            <h2>Balance</h2>
+            <p id="balance">$1000</p>
+        </div>
+
+        <div class="card">
+            <h2>BTC Price</h2>
+            <p id="price">$100</p>
+        </div>
+
+        <div class="card">
+            <h2>Holdings</h2>
+            <p id="holdings">0 BTC</p>
+        </div>
+    </div>
+
+    <div class="chart">
+        <div class="line" id="chart"></div>
+    </div>
+
+    <div class="controls">
+        <button class="buy" onclick="buyBTC()">BUY</button>
+        <button class="sell" onclick="sellBTC()">SELL</button>
+        <button class="reset" onclick="resetGame()">RESET</button>
+    </div>
+
+</div>
+
+<script>
+let balance = 1000;
+let btc = 0;
+let price = 100;
+
+const balanceEl = document.getElementById("balance");
+const holdingsEl = document.getElementById("holdings");
+const priceEl = document.getElementById("price");
+const chart = document.getElementById("chart");
+
+let prices = [];
+
+function updateUI(){
+    balanceEl.innerText = "$" + balance.toFixed(2);
+    holdingsEl.innerText = btc.toFixed(4) + " BTC";
+    priceEl.innerText = "$" + price.toFixed(2);
+}
+
+function generatePrice(){
+    let change = (Math.random() - 0.5) * 10;
+    price += change;
+
+    if(price < 20){
+        price = 20;
+    }
+
+    prices.push(price);
+
+    if(prices.length > 50){
+        prices.shift();
+    }
+
+    drawChart();
+    updateUI();
+}
+
+function drawChart(){
+    chart.innerHTML = "";
+
+    prices.forEach(p => {
+        const bar = document.createElement("div");
+        bar.classList.add("bar");
+
+        bar.style.height = p * 2 + "px";
+
+        if(p > price){
+            bar.style.background = "red";
+        } else {
+            bar.style.background = "limegreen";
+        }
+
+        chart.appendChild(bar);
+    });
+}
+
+function buyBTC(){
+    if(balance >= price){
+        btc += 1;
+        balance -= price;
+        updateUI();
+    } else {
+        alert("Not enough balance!");
+    }
+}
+
+function sellBTC(){
+    if(btc >= 1){
+        btc -= 1;
+        balance += price;
+        updateUI();
+    } else {
+        alert("No BTC to sell!");
+    }
+}
+
+function resetGame(){
+    balance = 1000;
+    btc = 0;
+    price = 100;
+    prices = [];
+    updateUI();
+}
+
+setInterval(generatePrice, 1000);
+
+updateUI();
+</script>
+
+</body>
+</html>
